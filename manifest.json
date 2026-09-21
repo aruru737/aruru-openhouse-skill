@@ -1,5 +1,6 @@
 {
-  "name": "aruru-openhouse-skill",
-  "version": "2.0.0",
-  "skills_count": 19
+  "name": "openhouse-marketing-master",
+  "version": "1.0.0",
+  "skills_count": 1,
+  "entry": "skills/openhouse-marketing-master/SKILL.md"
 }
