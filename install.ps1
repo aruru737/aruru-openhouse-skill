@@ -1,51 +1,40 @@
-# アルル制作所｜完成見学会Skill インストーラー
-# Windows PowerShell 5.1+
 $ErrorActionPreference = "Stop"
 
 $RepoZip = "https://github.com/aruru737/aruru-openhouse-skill/archive/refs/heads/main.zip"
+$SkillName = "openhouse-marketing-master"
 $InstallRoot = Join-Path $HOME ".agents\skills"
+$InstallDir = Join-Path $InstallRoot $SkillName
 $TempRoot = Join-Path $env:TEMP ("aruru-openhouse-" + [guid]::NewGuid().ToString("N"))
 $ZipPath = Join-Path $TempRoot "repo.zip"
 $ExtractPath = Join-Path $TempRoot "extract"
 
-function Step($m) { Write-Host ""; Write-Host "=== $m ===" -ForegroundColor Cyan }
-
 try {
-  Step "アルル制作所 完成見学会Skill をインストールします"
-  New-Item -ItemType Directory -Path $TempRoot -Force | Out-Null
-  New-Item -ItemType Directory -Path $InstallRoot -Force | Out-Null
+    New-Item -ItemType Directory -Path $TempRoot -Force | Out-Null
+    New-Item -ItemType Directory -Path $InstallRoot -Force | Out-Null
 
-  Step "最新版をダウンロードしています"
-  Invoke-WebRequest -Uri $RepoZip -OutFile $ZipPath -UseBasicParsing
+    Invoke-WebRequest -Uri $RepoZip -OutFile $ZipPath -UseBasicParsing
+    Expand-Archive -Path $ZipPath -DestinationPath $ExtractPath -Force
 
-  Step "展開しています"
-  Expand-Archive -Path $ZipPath -DestinationPath $ExtractPath -Force
-  $RepoDir = Get-ChildItem $ExtractPath -Directory | Select-Object -First 1
-  $SkillsRoot = Join-Path $RepoDir.FullName "skills"
-  if (-not (Test-Path $SkillsRoot)) { throw "skills フォルダが見つかりません。" }
+    $RepoDir = Get-ChildItem $ExtractPath -Directory | Select-Object -First 1
+    $Source = Join-Path $RepoDir.FullName ("skills\" + $SkillName + "\SKILL.md")
+    if (-not (Test-Path $Source)) { throw "統合版 SKILL.md が見つかりません。" }
 
-  Step "Skill をインストールしています"
-  $SkillDirs = Get-ChildItem $SkillsRoot -Directory
-  foreach ($dir in $SkillDirs) {
-    $dst = Join-Path $InstallRoot $dir.Name
-    if (Test-Path $dst) { Remove-Item $dst -Recurse -Force }
-    Copy-Item $dir.FullName $dst -Recurse -Force
-    Write-Host ("  OK " + $dir.Name)
-  }
+    if (Test-Path $InstallDir) { Remove-Item $InstallDir -Recurse -Force }
+    New-Item -ItemType Directory -Path $InstallDir -Force | Out-Null
+    Copy-Item $Source (Join-Path $InstallDir "SKILL.md") -Force
 
-  Step "インストール完了"
-  Write-Host ("インストール先: " + $InstallRoot) -ForegroundColor Green
-  Write-Host ("インストール数: " + $SkillDirs.Count + " Skill") -ForegroundColor Green
-  Write-Host ""
-  Write-Host "Codexを再起動し、住宅写真を添付して"
-  Write-Host "「完成見学会の資料を作って」"
-  Write-Host "と入力してください。" -ForegroundColor Yellow
+    Write-Host ""
+    Write-Host "インストール完了" -ForegroundColor Green
+    Write-Host ("インストール先: " + $InstallDir)
+    Write-Host ""
+    Write-Host "Codexを再起動し、住宅写真を添付して"
+    Write-Host "「完成見学会の資料を作って」"
+    Write-Host "と入力してください。" -ForegroundColor Yellow
 }
 catch {
-  Write-Host ""
-  Write-Host ("エラー: " + $_.Exception.Message) -ForegroundColor Red
-  exit 1
+    Write-Host ("エラー: " + $_.Exception.Message) -ForegroundColor Red
+    exit 1
 }
 finally {
-  if (Test-Path $TempRoot) { Remove-Item $TempRoot -Recurse -Force -ErrorAction SilentlyContinue }
+    if (Test-Path $TempRoot) { Remove-Item $TempRoot -Recurse -Force -ErrorAction SilentlyContinue }
 }
