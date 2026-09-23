@@ -1,0 +1,32 @@
+company:
+  name: ""
+  service_area: []
+  approved_tone: [誠実, 親しみやすい, 上品であたたかい, 暮らしの情景が浮かぶ, 押し売り感を出さない]
+  prohibited_tone: [不安を過度にあおる, 根拠のない断定, 仕様を並べるだけの堅い文章, 過度に詩的で内容が伝わらない文章, 抽象語を不自然に動かす比喩, ネガティブな情景から始める文章]
+
+claims:
+  # 会社で承認された事実だけを追加する。
+  # status: approved | conditional | prohibited | unknown
+  - id: example-seismic-grade
+    expression: 耐震等級3
+    status: unknown
+    required_evidence: 住宅性能評価書
+    approved_wording: ""
+    prohibited_wording: ""
+    last_verified: ""
+
+product_lines: []
+
+cta:
+  primary: 見学予約
+  reservation_url: ""
+  telephone: ""
+
+privacy:
+  address_policy: 予約者のみに詳細住所を案内
+  owner_name_policy: 許諾がある場合だけ使用
+
+operation:
+  legal_reviewer: ""
+  brand_reviewer: ""
+  approval_required_for: [性能, 価格, 保証, 実績, 来場特典]

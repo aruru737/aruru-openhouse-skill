@@ -16,20 +16,11 @@ try {
     Expand-Archive -Path $ZipPath -DestinationPath $ExtractPath -Force
 
     $RepoDir = Get-ChildItem $ExtractPath -Directory | Select-Object -First 1
-    $Source = Join-Path $RepoDir.FullName ("skills\" + $SkillName + "\SKILL.md")
-    if (-not (Test-Path $Source)) { throw "統合版 SKILL.md が見つかりません。" }
+    $Source = Join-Path $RepoDir.FullName ("skills\" + $SkillName)
+    $SkillInstaller = Join-Path $Source "install.ps1"
+    if (-not (Test-Path $SkillInstaller)) { throw "完全版スキルの install.ps1 が見つかりません。" }
 
-    if (Test-Path $InstallDir) { Remove-Item $InstallDir -Recurse -Force }
-    New-Item -ItemType Directory -Path $InstallDir -Force | Out-Null
-    Copy-Item $Source (Join-Path $InstallDir "SKILL.md") -Force
-
-    Write-Host ""
-    Write-Host "インストール完了" -ForegroundColor Green
-    Write-Host ("インストール先: " + $InstallDir)
-    Write-Host ""
-    Write-Host "Codexを再起動し、住宅写真を添付して"
-    Write-Host "「完成見学会の資料を作って」"
-    Write-Host "と入力してください。" -ForegroundColor Yellow
+    & $SkillInstaller -TargetRoot $InstallRoot
 }
 catch {
     Write-Host ("エラー: " + $_.Exception.Message) -ForegroundColor Red

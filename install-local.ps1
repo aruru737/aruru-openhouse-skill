@@ -1,24 +1,14 @@
 $ErrorActionPreference = "Stop"
-$SourceRoot = Join-Path $PSScriptRoot "skills"
+$SkillName = "openhouse-marketing-master"
+$SourceRoot = Join-Path $PSScriptRoot ("skills\" + $SkillName)
 $InstallRoot = Join-Path $HOME ".agents\skills"
 
 try {
-    if (-not (Test-Path $SourceRoot)) {
-        throw "skills フォルダが見つかりません。ZIPを展開してから実行してください。"
+    $Installer = Join-Path $SourceRoot "install.ps1"
+    if (-not (Test-Path $Installer)) {
+        throw "完全版スキルの install.ps1 が見つかりません。ZIPを展開してから実行してください。"
     }
-    New-Item -ItemType Directory -Path $InstallRoot -Force | Out-Null
-    $SkillDirs = Get-ChildItem $SourceRoot -Directory
-    foreach ($dir in $SkillDirs) {
-        $dst = Join-Path $InstallRoot $dir.Name
-        if (Test-Path $dst) { Remove-Item $dst -Recurse -Force }
-        Copy-Item $dir.FullName $dst -Recurse -Force
-        Write-Host ("  OK " + $dir.Name)
-    }
-    Write-Host ""
-    Write-Host "インストール完了" -ForegroundColor Green
-    Write-Host ("インストール先: " + $InstallRoot)
-    Write-Host ("インストール数: " + $SkillDirs.Count + " Skill")
-    Write-Host "Codexを再起動し、住宅写真を添付して「完成見学会の資料を作って」と入力してください。"
+    & $Installer -TargetRoot $InstallRoot
 }
 catch {
     Write-Host ("エラー: " + $_.Exception.Message) -ForegroundColor Red
